@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Manga Characters</string>
+    <string name="search">Search</string>
+    <string name="data_not_available">Data Not Available</string>
+</resources>
