@@ -1,12 +1,10 @@
 package sharma.pankaj.recyclerviewitemselection.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemDetailsLookup.ItemDetails
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class AnimeListAdapter @Inject constructor() : RecyclerView.Adapter<AnimeListAdapter.ViewHolder>() {
 
-    public var list: List<Characters> = arrayListOf()
+    var list: List<Characters> = arrayListOf()
 
     var tracker: SelectionTracker<Long>? = null
 
@@ -30,10 +28,7 @@ class AnimeListAdapter @Inject constructor() : RecyclerView.Adapter<AnimeListAda
         setHasStableIds(true)
     }
 
-    interface ItemClickListener {
-        fun onItemClick()
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     fun setData(list: List<Characters>) {
         this.list = list
         notifyDataSetChanged()

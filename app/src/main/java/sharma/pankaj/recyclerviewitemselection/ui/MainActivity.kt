@@ -8,14 +8,11 @@ import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.CheckBox
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
 import androidx.recyclerview.selection.*
 import dagger.hilt.android.AndroidEntryPoint
 import sharma.pankaj.recyclerviewitemselection.R
@@ -54,8 +51,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initObserver()
         viewModel.getMangaCharacter()
+        binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
-        tracker = SelectionTracker.Builder<Long>(
+        tracker = SelectionTracker.Builder(
             "mySelection",
             binding.recyclerView,
             StableIdKeyProvider(binding.recyclerView),
@@ -66,17 +64,19 @@ class MainActivity : AppCompatActivity() {
         ).build()
         adapter.tracker = tracker
 
+
         tracker?.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
             override fun onItemStateChanged(key: Long, selected: Boolean) {
                 super.onItemStateChanged(key, selected)
+//                toast(key.toString())
                 val index = getIndexOf(key)
                 if (index!=-1){
                     if (selected){
-                        selectList[key] = list[index]
-                        list[key.toInt()].isSelected = true
+                        selectList[index.toLong()] = list[index]
+                        list[index].isSelected = true
                     }else{
                         list[index].isSelected = false
-                        selectList.remove(key)
+                        selectList.remove(index.toLong())
                     }
                 }
             }
@@ -109,6 +109,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onQueryTextChange(newText: String): Boolean {
                     if (newText.isNotEmpty()){
                         filter(newText)
+                    }else{
+                        adapter.setData(list)
                     }
                     return false
                 }
@@ -117,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         val checkBoxTheme = menu.findItem(R.id.action_theme).actionView as CheckBox
         checkBoxTheme.isChecked = local.readBoolean(Constants.THEME_DAY_NIGHT, false)
         changeTheme(checkBoxTheme, local.readBoolean(Constants.THEME_DAY_NIGHT, false))
-        checkBoxTheme.setOnCheckedChangeListener { buttonView, isChecked ->
+        checkBoxTheme.setOnCheckedChangeListener { _, isChecked ->
             if (checkBoxTheme.isPressed){
                 changeTheme(checkBoxTheme, isChecked)
             }
@@ -128,7 +130,7 @@ class MainActivity : AppCompatActivity() {
     fun filter(text: String) {
         val temp: MutableList<Characters> = ArrayList()
         for (data in list) {
-            if (data.name.lowercase().contains(text.toString().lowercase())) {
+            if (data.name.lowercase().contains(text.lowercase())) {
                 temp.add(data)
             }
         }
